@@ -15,7 +15,7 @@ impl TftSpi {
 
     pub fn init(&mut self, delay: &mut Delay) {
         self.cs.set_high().unwrap();
-        self.dc.set_high().unwrap();
+        self.set_as_data();
 
         // software reset
         self.write(0x01, &[]);
@@ -104,47 +104,57 @@ impl TftSpi {
         self.spi_end();
     }
 
-    pub fn draw_pixel(&mut self, x: i32, y: i32, color: u32, delay: &mut Delay) {
+    pub fn draw_pixel(&mut self, x: i32, y: i32, color: u32) {
         
+        self.spi_begin();
+
         // DC_C
-        self.dc.set_low().unwrap();
+        self.set_as_command();
 
         if x != self.addr_col {
-            self.write_command(0x2A);
-            // #define SPI_32(H,L) ( ((H)<<8 | (H)>>8) | (((L)<<8 | (L)>>8)<<16 ) )
-            // SPI_32(x, x)
+            self.write_8(0x2A);
 
-            self.dc.set_high().unwrap();
+            let xa = ((x) << 8 | (x) >> 8) | (((x) << 8 | (x) >> 8) << 16);
 
-            self.write_32(x as u32);
+            self.set_as_data();
 
-            self.dc.set_low().unwrap();
+            self.write_32(xa as u32);
+
+            self.set_as_command();
 
             self.addr_col = x;
         }
 
         if y != self.addr_row {
-            self.write_command(0x2B);
-            // #define SPI_32(H,L) ( ((H)<<8 | (H)>>8) | (((L)<<8 | (L)>>8)<<16 ) )
-            // SPI_32(y, y)
+            self.write_8(0x2B);
+            
+            let ya = ((y) << 8 | (y) >> 8) | (((y) << 8 | (y) >> 8) << 16);
+            
+            self.set_as_data();
 
-            self.dc.set_high().unwrap();
-
-            self.write_32(y as u32);
+            self.write_32(ya as u32);
             self.addr_row = y;
 
-            self.dc.set_low().unwrap();
+            self.set_as_command();
         }
 
         self.write_8(0x2C);
 
         // DC_D
-        self.dc.set_high().unwrap();
+        self.set_as_data();
 
         self.write_16(color);
 
-        delay.delay_us(150u32);
+        self.spi_end();
 
+    }
+
+    fn set_as_data(&mut self) {
+        self.dc.set_high().unwrap();
+    }
+
+    fn set_as_command(&mut self) {
+        self.dc.set_low().unwrap();
     }
 
     fn spi_begin(&mut self) {
@@ -159,11 +169,11 @@ impl TftSpi {
     fn write_command(&mut self, cmd: u8) {
         self.spi_begin();
 
-        self.dc.set_low().unwrap();
+        self.set_as_command();
 
         self.spi.send(cmd).unwrap();
 
-        self.dc.set_high().unwrap();
+        self.set_as_data();
         
         self.spi_end();
     }
@@ -173,7 +183,7 @@ impl TftSpi {
         for byte in data {
             self.spi_begin();
 
-            self.dc.set_high().unwrap(); // Play safe, but should already be in data mode
+            self.set_as_data(); // Play safe, but should already be in data mode
 
             self.spi.send(*byte).unwrap();
 

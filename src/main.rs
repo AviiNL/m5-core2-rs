@@ -129,7 +129,7 @@ fn main() -> ! {
         // for loop 150..170 as y
         for y in 110..130 {
             // write_data!(0x2C, [0xFF, 0x00, 0x00]);
-            tft_spi.draw_pixel(x, y, 0, &mut delay);
+            tft_spi.draw_pixel(x, y, 0xFFFFFF);
         }
     }
 
