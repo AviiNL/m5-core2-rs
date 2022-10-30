@@ -264,7 +264,7 @@ impl Axp192 {
         Ok(())
     }
 
-    fn set_lcd_reset(&mut self, state: bool) -> Result<(), Error> {
+    pub fn set_lcd_reset(&mut self, state: bool) -> Result<(), Error> {
         let mut data = self.read(0x96)?;
 
         if state {

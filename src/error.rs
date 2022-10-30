@@ -1,3 +1,5 @@
+use core::convert::Infallible;
+
 use display_interface::DisplayError;
 use esp32_hal::i2c::Error as I2CError;
 
@@ -17,5 +19,11 @@ impl From<I2CError> for Error {
 impl From<DisplayError> for Error {
     fn from(err: DisplayError) -> Self {
         Error::DisplayError(err)
+    }
+}
+
+impl From<Infallible> for Error {
+    fn from(_: Infallible) -> Self {
+        unreachable!()
     }
 }

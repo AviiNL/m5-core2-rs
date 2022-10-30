@@ -5,5 +5,5 @@ build:
 	cargo build --release
 
 flash:
-	espflash target/xtensa-esp32-none-elf/release/m5_core2 --monitor
+	espflash COM4 target/xtensa-esp32-none-elf/release/m5_core2 --monitor
 
