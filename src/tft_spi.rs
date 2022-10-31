@@ -71,10 +71,10 @@ impl TftSpi {
 
         match rotation {
             0 => {
-                self.write(0x36, &[0x80 | 0x20 | 0x08])
+                self.write(0x36, &[0x80 | 0x20 | 0x08]);
             },
             1 => {
-                self.write(0x36, &[0x08])
+                self.write(0x36, &[0x08]);
             },
             2 => {
                 self.write(0x36, &[0x20 | 0x40 | 0x08]);
@@ -133,9 +133,10 @@ impl TftSpi {
             self.set_as_data();
 
             self.write_32(ya as u32);
-            self.addr_row = y;
 
             self.set_as_command();
+            
+            self.addr_row = y;
         }
 
         self.write_8(0x2C);
@@ -213,7 +214,6 @@ impl TftSpi {
         self.spi.transfer(&mut [a as u8]).unwrap();
         self.spi.transfer(&mut [b as u8]).unwrap();
         self.spi.transfer(&mut [c as u8]).unwrap();
-
 
     }
 
