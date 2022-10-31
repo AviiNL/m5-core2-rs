@@ -456,6 +456,8 @@ dependencies = [
 [[package]]
 name = "mipidsi"
 version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d01689378a99f5956d9840ed831fb48a8fb544fd1234593d7eb236147634642d"
 dependencies = [
  "display-interface",
  "embedded-graphics-core",
